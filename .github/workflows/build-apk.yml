@@ -1,38 +1,37 @@
+
 name: Build MomCare APK
 
 on:
-  workflow_dispatch:
   push:
     branches: [main]
-
-permissions:
-  contents: read
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout MomCare
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK packages
-        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
 
       - name: Build debug APK
-        run: chmod +x gradlew && ./gradlew --no-daemon assembleDebug
+        run: chmod +x ./gradlew && ./gradlew --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MomCare-debug-apk
+          name: MomCare-debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
